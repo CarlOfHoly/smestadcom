@@ -14,6 +14,9 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 provider "aws" {
   region              = "eu-west-1"
   allowed_account_ids = ["737032216196"] # TODO: Din AWS konto-ID.
@@ -21,6 +24,9 @@ provider "aws" {
 
 locals {
   name_prefix = "website"
+  root_domain = "smestad.com"
+  current_account_id = data.aws_caller_identity.current.id
+  current_region = data.aws_region.current.name
   tags = {
     project   = local.name_prefix
     terraform = true
