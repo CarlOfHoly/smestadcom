@@ -1,9 +1,9 @@
 terraform {
   required_version = "1.2.7"
   backend "s3" {
-    key            = "capra-playground/state.tfstate"
-    bucket         = "<account-id>-terraform-state" # TODO: Din AWS konto-ID.
-    dynamodb_table = "<account-id>-terraform-lock"  # TODO: Din AWS konto-ID.
+    key            = "website/state.tfstate"
+    bucket         = "737032216196-terraform-state" # TODO: Din AWS konto-ID.
+    dynamodb_table = "737032216196-terraform-lock"  # TODO: Din AWS konto-ID.
     region         = "eu-west-1"
   }
   required_providers {
@@ -16,11 +16,11 @@ terraform {
 
 provider "aws" {
   region              = "eu-west-1"
-  allowed_account_ids = ["<account-id>"] # TODO: Din AWS konto-ID.
+  allowed_account_ids = ["737032216196"] # TODO: Din AWS konto-ID.
 }
 
 locals {
-  name_prefix = "capra-playground"
+  name_prefix = "website"
   tags = {
     project   = local.name_prefix
     terraform = true
@@ -41,6 +41,6 @@ resource "aws_budgets_budget" "this" {
     threshold                  = 100
     threshold_type             = "PERCENTAGE"
     notification_type          = "FORECASTED"
-    subscriber_email_addresses = ["<email>"] # TODO: Din e-post
+    subscriber_email_addresses = ["carl.smestad+dev@gmail.com"] # TODO: Din e-post
   }
 }
