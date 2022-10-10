@@ -23,10 +23,10 @@ provider "aws" {
 }
 
 locals {
-  name_prefix = "website"
-  root_domain = "smestad.com"
+  name_prefix        = "website"
+  root_domain        = "smestad.com"
   current_account_id = data.aws_caller_identity.current.id
-  current_region = data.aws_region.current.name
+  current_region     = data.aws_region.current.name
   tags = {
     project   = local.name_prefix
     terraform = true
@@ -49,4 +49,33 @@ resource "aws_budgets_budget" "this" {
     notification_type          = "FORECASTED"
     subscriber_email_addresses = ["carl.smestad+dev@gmail.com"] # TODO: Din e-post
   }
+}
+
+resource "aws_s3_bucket" "website" {
+  bucket = "${local.name_prefix}-${local.current_account_id}-website"
+  versioning {
+    enabled = true
+  }
+  force_destroy = true
+  website {
+    index_document  = "index.html"
+    eerror_document = "index.html"
+  }
+
+}
+
+data "aws_iam_policy_document" "s3_access" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = [aws_s3_bucket.website.arn, "${aws_s3_bucket.website.arn}/*"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "this" {
+  bucket = aws_s3_bucket.website.id
+  policy = data.aws_iam_policy_document.s3_access.json
 }
