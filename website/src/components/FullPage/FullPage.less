@@ -1,0 +1,69 @@
+@import (reference) "../../_globals.less";
+
+.fullpage {
+  display: flex;
+}
+
+.dark-mode {
+  #fp-nav {
+    a {
+      span {
+        background: @snow-storm-3 !important ;
+      }
+    }
+  }
+}
+.light-mode {
+  #fp-nav {
+    a {
+      span {
+        background: @primary-dark-color !important ;
+      }
+    }
+  }
+}
+#fp-nav {
+  opacity: 0;
+  z-index: 1 !important;
+  li {
+    margin-bottom: 16px !important;
+    stroke-linecap: round !important;
+  }
+  a {
+    span {
+      border-radius: 0 !important;
+      height: 3px !important;
+      width: 24px !important;
+      margin: 0 !important;
+    }
+    &.active {
+      span {
+        width: 40px !important;
+        .easeOut();
+      }
+    }
+    &:hover {
+      span {
+        .easeOut();
+        width: 40px !important;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: @mediaSmMax) {
+  #fp-nav {
+    position: fixed;
+    width: 100% !important;
+    height: 100px !important;
+    bottom: -40px !important;
+    left: 50% !important;
+    right: 0 !important;
+    top: auto !important;
+
+    ul {
+      transform-origin: left !important;
+      transform: rotate(-90deg) !important;
+    }
+  }
+}

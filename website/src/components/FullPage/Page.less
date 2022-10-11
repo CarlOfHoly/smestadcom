@@ -1,0 +1,145 @@
+@import (reference) "../../_globals.less";
+
+.page {
+  font-size: 40px;
+  .title {
+    opacity: 0;
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+  .byline {
+    opacity: 0;
+    margin-bottom: 16px;
+    margin-top: 0px;
+  }
+  .ingress {
+    opacity: 0;
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  .circle-one,
+  .circle-two,
+  .circle-three {
+    transform-origin: 50% 50%;
+    position: absolute;
+    width: 500px;
+    filter: grayscale(1);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  .triangle-one,
+  .triangle-two,
+  .triangle-three {
+    transform-origin: 50% 50% 80% 50%;
+    position: absolute;
+    width: 500px;
+    filter: grayscale(100%);
+    top: 0;
+    left: 500px;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+  .triangle-one,
+  .triangle-three {
+    opacity: 0.2;
+  }
+  .triangle-two {
+    opacity: 0.6;
+  }
+
+  .square-one,
+  .square-two,
+  .square-three {
+    transform-origin: 50% 50%;
+    position: absolute;
+    width: 400px;
+    filter: grayscale(100%);
+    top: 0;
+    left: 500px;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    transform: rotate(20deg);
+  }
+  .square-one,
+  .square-three {
+    opacity: 0.2;
+  }
+  .square-two {
+    opacity: 0.6;
+  }
+}
+
+.right {
+  text-align: right;
+  margin-right: 16vw;
+}
+
+.left {
+  margin-left: 16vw;
+}
+
+.light-mode {
+  .triangle,
+  .circle,
+  .square {
+    &-one,
+    &-two,
+    &-three {
+      filter: grayscale(1) invert(1);
+    }
+  }
+}
+
+@media only screen and (max-width: @mediaSmMax) {
+  .fp-tableCell {
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .page {
+    font-size: 32px;
+    margin-bottom: 160px;
+
+    &.left {
+      margin-left: 0;
+    }
+
+    .ingress {
+      font-size: 16px;
+    }
+    .circle {
+      &-one,
+      &-two,
+      &-three {
+        width: 300px;
+      }
+    }
+    .triangle {
+      &-one,
+      &-two,
+      &-three {
+        width: 300px;
+        left: 0;
+        bottom: 40vh;
+      }
+    }
+    .square {
+      &-one,
+      &-two,
+      &-three {
+        width: 220px;
+        left: 0;
+        bottom: 40vh;
+      }
+    }
+  }
+}

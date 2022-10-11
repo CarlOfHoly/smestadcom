@@ -1,0 +1,14 @@
+@import (reference) "../../_globals.less";
+
+.layout {
+  margin: 0;
+  height: 100%;
+  &.dark-mode {
+    .gradient(linear; @primary-dark-color, @secondary-dark-color);
+    color: @snow-storm-3;
+  }
+  &.light-mode {
+    .gradient(linear; darken(@snow-storm-1, 15), @snow-storm-3);
+    color: @primary-dark-color;
+  }
+}

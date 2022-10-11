@@ -1,0 +1,40 @@
+@import (reference) "../../_globals.less";
+
+.menu-btn {
+  opacity: 0;
+  position: absolute;
+  z-index: 3;
+  right: 45px;
+  top: 39px;
+  cursor: pointer;
+  .easeOut();
+
+  .btn-line {
+    width: 28px;
+    height: 3px;
+    margin: 0 0 5px 0;
+    .easeOut();
+    &.dark-mode {
+      background: @snow-storm-3;
+    }
+    &.light-mode {
+      background: @primary-dark-color;
+    }
+  }
+
+  &.close {
+    transform: rotate(180deg);
+
+    .btn-line {
+      &:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      &:nth-child(2) {
+        opacity: 0;
+      }
+      &:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+      }
+    }
+  }
+}
