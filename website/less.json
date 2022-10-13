@@ -1,5 +1,0 @@
-{
-  "watchFolder": "src",
-  "outputFolder": "css",
-  "plugins": "npm-import=\"prefix=~\""
-}
