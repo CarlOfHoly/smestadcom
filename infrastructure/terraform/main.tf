@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "github_assume" {
       test     = "ForAllValues:StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       # TODO: Replace <username> and <repository> with your GitHub username and repository name
-      values   = ["repo:/CarlOfHoly/smestadcom:*"]
+      values   = ["repo:CarlOfHoly/smestadcom:*"]
     }
     condition {
       test     = "ForAllValues:StringLike"
