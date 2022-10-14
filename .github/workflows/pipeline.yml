@@ -27,5 +27,7 @@ jobs:
           terraform_wrapper: false
       - name: Deploy Terraform
         run: |
+          echo "$AWS_ACCESS_KEY_ID"
+          echo "$AWS_SECRET_ACCESS_KEY"
           cd infrastructure/terraform && terraform init && terraform apply -auto-approve 
 
