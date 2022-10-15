@@ -73,6 +73,14 @@ data "aws_iam_policy_document" "s3_access" {
       identifiers = ["*"]
     }
   }
+  statement {
+    actions = ["s3:PutObject", "s3:PutObjectAcl"]
+    resources = [aws_s3_bucket.website.arn, "${aws_s3_bucket.website.arn}/*"]
+     principals {
+       type = "AWS"
+       identifiers = ["arn:aws:iam::737032216196:role/website-github-actions"]
+     }
+  }
 }
 
 resource "aws_s3_bucket_policy" "this" {
