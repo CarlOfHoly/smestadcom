@@ -24,7 +24,7 @@ provider "aws" {
 
 locals {
   name_prefix        = "website"
-  root_domain        = "smestad.com"
+  root_domain        = "carlsmestad.com"
   current_account_id = data.aws_caller_identity.current.id
   current_region     = data.aws_region.current.name
   tags = {
@@ -58,7 +58,7 @@ resource "aws_s3_bucket" "website" {
   }
   force_destroy = true
   website {
-    index_document  = "index.html"
+    index_document = "index.html"
     error_document = "index.html"
   }
 
@@ -66,20 +66,20 @@ resource "aws_s3_bucket" "website" {
 
 data "aws_iam_policy_document" "s3_access" {
   statement {
-    actions   = ["s3:GetObject"]
+    actions   = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject", "s3:ListBucket"]
     resources = [aws_s3_bucket.website.arn, "${aws_s3_bucket.website.arn}/*"]
     principals {
-      type        = "*"
-      identifiers = ["*"]
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::737032216196:role/website-github-actions"]
     }
   }
   statement {
-    actions = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject", "s3:ListBucket"]
+    actions   = ["s3:GetObject"]
     resources = [aws_s3_bucket.website.arn, "${aws_s3_bucket.website.arn}/*"]
-     principals {
-       type = "AWS"
-       identifiers = ["arn:aws:iam::737032216196:role/website-github-actions"]
-     }
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.this.iam_arn]
+    }
   }
 }
 
@@ -89,8 +89,8 @@ resource "aws_s3_bucket_policy" "this" {
 }
 
 resource "aws_iam_openid_connect_provider" "github" {
-  url = "https://token.actions.githubusercontent.com"
-  client_id_list = ["sts.amazonaws.com"]
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 }
 
@@ -114,12 +114,96 @@ data "aws_iam_policy_document" "github_assume" {
       test     = "ForAllValues:StringLike"
       variable = "token.actions.githubusercontent.com:sub"
       # TODO: Replace <username> and <repository> with your GitHub username and repository name
-      values   = ["repo:CarlOfHoly/smestadcom:*"]
+      values = ["repo:CarlOfHoly/smestadcom:*"]
     }
     condition {
       test     = "ForAllValues:StringLike"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+  }
+}
+
+resource "aws_cloudfront_origin_access_identity" "this" {
+  comment = "${local.name_prefix} - origin access identity for s3/cloudfront"
+}
+
+data "aws_route53_zone" "this" {
+  name = local.root_domain
+}
+
+provider "aws" {
+  region = "us-east-1"
+  alias = "certificate_region"
+}
+
+data "aws_acm_certificate" "wildcard" {
+  domain   = "*.${local.root_domain}"
+  provider = aws.certificate_region
+  statuses = ["ISSUED"]
+}
+
+resource "aws_cloudfront_distribution" "this" {
+  origin {
+    domain_name = aws_s3_bucket.website.bucket_regional_domain_name
+    origin_id   = aws_cloudfront_origin_access_identity.this.id
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.this.cloudfront_access_identity_path
+    }
+  }
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+  aliases             = ["*.${data.aws_route53_zone.this.name}"]
+  custom_error_response {
+    error_code         = 404
+    response_code      = 200
+    response_page_path = "/index.html"
+  }
+  default_cache_behavior {
+    allowed_methods = [
+      "GET",
+      "HEAD",
+    ]
+    cached_methods = [
+      "GET",
+      "HEAD",
+    ]
+    target_origin_id = aws_cloudfront_origin_access_identity.this.id
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 604800
+  }
+  price_class = "PriceClass_100"
+  viewer_certificate {
+    acm_certificate_arn      = data.aws_acm_certificate.wildcard.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+  # viewer_certificate {
+  #   cloudfront_default_certificate = true
+  # }
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+}
+
+resource "aws_route53_record" "website_domain" {
+  name    = data.aws_route53_zone.this.name
+  type    = "A"
+  zone_id = data.aws_route53_zone.this.id
+  alias {
+    name                   = aws_cloudfront_distribution.this.domain_name
+    zone_id                = aws_cloudfront_distribution.this.hosted_zone_id
+    evaluate_target_health = false
   }
 }
