@@ -20,7 +20,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::737032216196:role/website-github-actions
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/website-github-actions
           aws-region: eu-west-1
       - name: Test AWS credentials
         run: |
@@ -30,9 +30,9 @@ jobs:
       #   with:
       #     terraform_version: 1.2.7
       #     terraform_wrapper: false
-      # - name: Deploy new frontend
-      #   run: |
-      #     BUCKET_NAME="$(cd terraform && terraform output -raw bucket_name)"
-      #     aws s3 sync --region "eu-west-1" --delete "frontend/dist/" "s3://$BUCKET_NAME"
-      #     aws s3 cp --region "eu-west-1" "frontend/dist/index.html" "s3://$BUCKET_NAME" --cache-control "no-cache"
+      - name: Deploy new frontend
+        run: |
+          BUCKET_NAME="website-${{ secrets.AWS_ACCOUNT_ID }}-website"
+          aws s3 sync --region "eu-west-1" --delete "frontend/dist/" "s3://$BUCKET_NAME"
+          aws s3 cp --region "eu-west-1" "frontend/dist/index.html" "s3://$BUCKET_NAME" --cache-control "no-cache"
 
