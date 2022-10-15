@@ -39,6 +39,21 @@ Resources:
       Bucket: !Ref TerraformBucket
       PolicyDocument:
         Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:role/website-github-actions"
+            Action: "s3:PutObject"
+            Resource: !Sub
+              - "${BucketArn}/*"
+              - BucketArn: !GetAtt TerraformBucket.Arn
+          - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:sts::${AWS::AccountId}:assumed-role/website-github-actions/GitHubActions"
+            Action: "s3:PutObject"
+            Resource: !Sub
+              - "${BucketArn}/*"
+              - BucketArn: !GetAtt TerraformBucket.Arn
+            
           - Effect: Deny
             Principal: "*"
             Action: "s3:PutObject"
