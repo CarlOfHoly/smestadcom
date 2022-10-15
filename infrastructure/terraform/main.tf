@@ -66,7 +66,7 @@ resource "aws_s3_bucket" "website" {
 
 data "aws_iam_policy_document" "s3_access" {
   statement {
-    actions   = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject", "s3:ListBucket"]
+    actions   = ["s3:PutObject", "s3:PutObjectAcl", "s3:GetObject", "s3:ListBucket", "s3:DeleteObject"]
     resources = [aws_s3_bucket.website.arn, "${aws_s3_bucket.website.arn}/*"]
     principals {
       type        = "AWS"
