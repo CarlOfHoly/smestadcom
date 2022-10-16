@@ -158,7 +158,7 @@ resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   is_ipv6_enabled     = false
   default_root_object = "index.html"
-  aliases             = ["*.${data.aws_route53_zone.this.name}", "www.${data.awe_route53_zone.this.name}"]
+  aliases             = ["*.${data.aws_route53_zone.this.name}", "www.${data.aws_route53_zone.this.name}", "${data.aws_route53_zone.this.name}"]
   custom_error_response {
     error_code         = 404
     response_code      = 200
