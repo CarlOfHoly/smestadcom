@@ -147,6 +147,50 @@ data "aws_acm_certificate" "certificate" {
   statuses = ["ISSUED"]
 }
 
+resource "aws_wafv2_web_acl" "rate_limiting" {
+  name        = "rate-limiting-cloudfront"
+  description = "Cloudfront rate based statement."
+  scope       = "CLOUDFRONT"
+  provider = aws.certificate_region
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "rule-1"
+    priority = 1
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 10000
+        aggregate_key_type = "IP"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name                = "friendly-rule-metric-name"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  tags = {
+    Tag1 = "Value1"
+    Tag2 = "Value2"
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = false
+    metric_name                = "friendly-metric-name"
+    sampled_requests_enabled   = false
+  }
+}
+
 resource "aws_cloudfront_distribution" "this" {
   origin {
     domain_name = aws_s3_bucket.website.bucket_regional_domain_name
@@ -185,6 +229,7 @@ resource "aws_cloudfront_distribution" "this" {
     default_ttl            = 3600
     max_ttl                = 604800
   }
+  web_acl_id = aws_wafv2_web_acl.rate_limiting.arn
   price_class = "PriceClass_100"
   viewer_certificate {
     acm_certificate_arn      = data.aws_acm_certificate.certificate.arn
@@ -212,3 +257,4 @@ resource "aws_route53_record" "website_domain" {
     evaluate_target_health = false
   }
 }
+
