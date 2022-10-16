@@ -156,9 +156,9 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
   enabled             = true
-  is_ipv6_enabled     = true
+  is_ipv6_enabled     = false
   default_root_object = "index.html"
-  aliases             = ["*.${data.aws_route53_zone.this.name}"]
+  aliases             = ["*.${data.aws_route53_zone.this.name}", "www.${data.awe_route53_zone.this.name}"]
   custom_error_response {
     error_code         = 404
     response_code      = 200
@@ -202,7 +202,8 @@ resource "aws_cloudfront_distribution" "this" {
 }
 
 resource "aws_route53_record" "website_domain" {
-  name    = data.aws_route53_zone.this.name
+  for_each = local.domains
+  name    = each.value
   type    = "A"
   zone_id = data.aws_route53_zone.this.id
   alias {
