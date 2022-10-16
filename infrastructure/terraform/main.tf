@@ -2,8 +2,8 @@ terraform {
   required_version = "1.2.7"
   backend "s3" {
     key            = "website/state.tfstate"
-    bucket         = "737032216196-terraform-state" # TODO: Din AWS konto-ID.
-    dynamodb_table = "737032216196-terraform-lock"  # TODO: Din AWS konto-ID.
+    bucket         = "737032216196-terraform-state" 
+    dynamodb_table = "737032216196-terraform-lock"  
     region         = "eu-west-1"
   }
   required_providers {
@@ -19,7 +19,7 @@ data "aws_region" "current" {}
 
 provider "aws" {
   region              = "eu-west-1"
-  allowed_account_ids = ["737032216196"] # TODO: Din AWS konto-ID.
+  allowed_account_ids = ["737032216196"] 
 }
 
 locals {
@@ -27,6 +27,11 @@ locals {
   root_domain        = "carlsmestad.com"
   current_account_id = data.aws_caller_identity.current.id
   current_region     = data.aws_region.current.name
+  domains = {
+    root = "carlsmestad.com"
+    www = "www.carlsmestad.com"
+    sub = "*.carlsmestad.com"
+  }
   tags = {
     project   = local.name_prefix
     terraform = true
@@ -47,7 +52,7 @@ resource "aws_budgets_budget" "this" {
     threshold                  = 100
     threshold_type             = "PERCENTAGE"
     notification_type          = "FORECASTED"
-    subscriber_email_addresses = ["carl.smestad+dev@gmail.com"] # TODO: Din e-post
+    subscriber_email_addresses = ["carl.smestad+dev@gmail.com"] 
   }
 }
 
@@ -113,7 +118,6 @@ data "aws_iam_policy_document" "github_assume" {
     condition {
       test     = "ForAllValues:StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      # TODO: Replace <username> and <repository> with your GitHub username and repository name
       values = ["repo:CarlOfHoly/smestadcom:*"]
     }
     condition {
@@ -129,7 +133,7 @@ resource "aws_cloudfront_origin_access_identity" "this" {
 }
 
 data "aws_route53_zone" "this" {
-  name = local.root_domain
+  name = "${local.root_domain}."
 }
 
 provider "aws" {
@@ -137,8 +141,8 @@ provider "aws" {
   alias = "certificate_region"
 }
 
-data "aws_acm_certificate" "wildcard" {
-  domain   = "*.${local.root_domain}"
+data "aws_acm_certificate" "certificate" {
+  domain   = "${local.root_domain}"
   provider = aws.certificate_region
   statuses = ["ISSUED"]
 }
@@ -183,7 +187,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
   price_class = "PriceClass_100"
   viewer_certificate {
-    acm_certificate_arn      = data.aws_acm_certificate.wildcard.arn
+    acm_certificate_arn      = data.aws_acm_certificate.certificate.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
