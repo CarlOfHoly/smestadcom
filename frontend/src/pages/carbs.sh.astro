@@ -1,3 +1,6 @@
 ---
-return Astro.redirect('https://raw.githubusercontent.com/CarlOfHoly/CARBS/main/carbs.sh')
+const redirectUrl = "https://raw.githubusercontent.com/CarlOfHoly/CARBS/main/carbs.sh"
 ---
+<head>
+    <meta http-equiv="refresh" content={ `0; url=${ redirectUrl }` } />
+</head>
