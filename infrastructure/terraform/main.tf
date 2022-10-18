@@ -224,6 +224,10 @@ resource "aws_cloudfront_distribution" "this" {
         forward = "none"
       }
     }
+    function_association {
+      event_type = "viewer-request"
+      function_arn = aws_cloudfront_function.multi-page-index.arn
+    }
     viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 3600
@@ -258,3 +262,10 @@ resource "aws_route53_record" "website_domain" {
   }
 }
 
+resource "aws_cloudfront_function" "multi-page-index" {
+  name    = "multi-page-index"
+  runtime = "cloudfront-js-1.0"
+  comment = "Fix sub-folder/index.html"
+  publish = true
+  code    = file("${path.module}/awsxastro.js")
+}
