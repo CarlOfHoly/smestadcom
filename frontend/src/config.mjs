@@ -7,8 +7,8 @@ export const SITE = {
 	title: 'Carl Portfolio',
 	description: '🚀 AstroWind is a free and ready to start template to make your website using Astro and Tailwind CSS.',
 
-	googleAnalyticsId: false, // or "G-XXXXXXXXXX",
-	googleSiteVerificationId: 'orcPxI47GSa-cRvY11tUe6iGg2IO_RPvnA1q95iEM3M',
+	googleAnalyticsId: "G-LY75PF7JLS", // or "G-XXXXXXXXXX",
+	googleSiteVerificationId: 'KoKOzMA361I-lDhuAME6NEdPYoCdULoOIETgWMpCtK8',
 };
 
 export const BLOG = {
