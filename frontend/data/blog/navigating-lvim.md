@@ -5,7 +5,7 @@ description: "Shows how to efficiently navigate LunarVim by using the default mo
 excerpt: "Shows how to efficiently navigate LunarVim by using the default movements. As well as some of my own tricks."
 image: "~/assets/images/lunarvim_logo.png"
 category: "Tutorials"
-tags: [carbs, tricks]
+tags: [tricks, vim]
 ---
 
 This article is about all the different keybindings in my custom setup of Arch Linux.
